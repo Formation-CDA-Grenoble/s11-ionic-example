@@ -1,29 +1,6 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import Article from '../../models/Article';
-import { Observable } from 'rxjs';
-
-const query = `
-query MyQuery {
-  allArticles {
-    title
-    createdAt
-    content
-    cover {
-      url
-    }
-    category {
-      name
-    }
-  }
-}
-`;
-
-interface AllArticlesRequest {
-  data: {
-    allArticles: Article[],
-  }
-}
+import { ArticleService } from '../article.service';
 
 @Component({
   selector: 'app-tab1',
@@ -33,21 +10,17 @@ interface AllArticlesRequest {
 export class Tab1Page {
   articles: Article[];
 
-  constructor(private http: HttpClient) {
-    this.getArticles().subscribe(response =>
-      this.articles = response.data.allArticles
-    );
-  }
-
-  getArticles(): Observable<AllArticlesRequest> {
-    return this.http.post<AllArticlesRequest>(
-      'https://graphql.datocms.com/',
-      { query },
-      {
-        headers: {
-          Authorization: "Bearer 6138772c24e2df7d8971d1adeed11e",
-        }
-      }
+  constructor(private articleService: ArticleService) {
+    articleService.getArticles().subscribe(response =>
+      this.articles = response.data.allArticles.map(
+        article => ({
+          title: article.title,
+          content: article.content,
+          createdAt: new Date(article.createdAt),
+          category: article.category,
+          cover: article.cover,
+        })
+      )
     );
   }
 

@@ -2,10 +2,12 @@
   {{ article.title }}
 </h1>
 
+<img [src]="this.article.cover.url" />
+
 <p>
   {{ article.content }}
 </p>
 
 <div>
-  Published on {{ article.createdAt }}
+  Published in {{ article.category.name }} on {{ article.createdAt.toDateString() }}
 </div>
